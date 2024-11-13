@@ -17,10 +17,7 @@ def generate_ellipsoid_clusters(distance, n_samples=100, cluster_std=0.5):
     y1 = np.zeros(n_samples)
 
     # Generate the second cluster (class 1)
-    X2 = np.random.multivariate_normal(mean=[1, 1], cov=covariance_matrix, size=n_samples)
-    
-    # Implement: Shift the second cluster along the x-axis and y-axis for a given distance
-    raise NotImplementedError("Implement the shift of the second cluster")
+    X2 = np.random.multivariate_normal(mean=[1 + distance, 1 + distance], cov=covariance_matrix, size=n_samples)
     y2 = np.ones(n_samples)
 
     # Combine the clusters into one dataset
@@ -50,15 +47,26 @@ def do_experiments(start, end, step_num):
     # Run experiments for each shift distance
     for i, distance in enumerate(shift_distances, 1):
         X, y = generate_ellipsoid_clusters(distance=distance)
-        # Implement: record all necessary information for each distance
-        raise NotImplementedError("Record all necessary information for each distance")
+        # record all necessary information for each distance
+        model, beta0, beta1, beta2 = fit_logistic_regression(X, y)
 
-        # Implement: Plot the dataset
+        beta0_list.append(beta0)
+        beta1_list.append(beta1)
+        beta2_list.append(beta2)
+        slope = -beta1 / beta2
+        intercept = -beta0 / beta2
+        slope_list.append(slope)
+        intercept_list.append(intercept)
+        
+
+        # Plot the dataset
         plt.subplot(n_rows, n_cols, i)
-        raise NotImplementedError("Plot the dataset")
+   
 
-        # Implement: Calculate and store logistic loss
-        raise NotImplementedError("Calculate and store logistic loss")
+        # Calculate and store logistic loss
+        loss = logistic_loss(model, X, y)
+        loss_list.append(loss)
+
         # Calculate margin width between 70% confidence contours for each class
         x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
         y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
