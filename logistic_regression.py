@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import log_loss
 from scipy.spatial.distance import cdist
 import os
 
@@ -62,9 +63,9 @@ def do_experiments(start, end, step_num):
         # Plot the dataset
         plt.subplot(n_rows, n_cols, i)
    
-
+        y_pred_prob = model.predict_proba(X)[:,1]
         # Calculate and store logistic loss
-        loss = logistic_loss(model, X, y)
+        loss = log_loss(y, y_pred_prob)
         loss_list.append(loss)
 
         # Calculate margin width between 70% confidence contours for each class
@@ -74,8 +75,10 @@ def do_experiments(start, end, step_num):
         Z = model.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
         Z = Z.reshape(xx.shape)
 
-        # Implement: Calculate decision boundary slope and intercept
-        raise NotImplementedError("Calculate and plot decision boundary slope and intercept")
+        # Calculate decision boundary slope and intercept
+        boundary_x = np.linspace(x_min, x_max, 200)
+        boundary_y = slope * boundary_x + intercept
+        plt.plot(boundary_x, boundary_y, color='black', linestyle='--', linewidth=2, label="Decision Boundary")
 
         # Plot fading red and blue contours for confidence levels
         contour_levels = [0.7, 0.8, 0.9]
@@ -111,45 +114,54 @@ def do_experiments(start, end, step_num):
     # Plot 1: Parameters vs. Shift Distance
     plt.figure(figsize=(18, 15))
 
-    # Implement: Plot beta0
+    #  Plot beta0
     plt.subplot(3, 3, 1)
+    plt.plot(shift_distances, beta0_list, marker='o', color='b')
     plt.title("Shift Distance vs Beta0")
     plt.xlabel("Shift Distance")
     plt.ylabel("Beta0")
 
-    # Implement: Plot beta1
+    # Plot beta1
     plt.subplot(3, 3, 2)
+    plt.plot(shift_distances, beta1_list, marker='o', color='g')
     plt.title("Shift Distance vs Beta1 (Coefficient for x1)")
     plt.xlabel("Shift Distance")
     plt.ylabel("Beta1")
 
-    # Implement: Plot beta2
+    #  Plot beta2
     plt.subplot(3, 3, 3)
+    plt.plot(shift_distances, beta2_list, marker='o', color='r')
     plt.title("Shift Distance vs Beta2 (Coefficient for x2)")
     plt.xlabel("Shift Distance")
     plt.ylabel("Beta2")
 
-    # Implement: Plot beta1 / beta2 (Slope)
+    # Plot beta1 / beta2 (Slope)
     plt.subplot(3, 3, 4)
+    slope_values = np.array(beta1_list) / np.array(beta2_list)
+    plt.plot(shift_distances, slope_values, marker='o', color='m')
     plt.title("Shift Distance vs Beta1 / Beta2 (Slope)")
     plt.xlabel("Shift Distance")
     plt.ylabel("Beta1 / Beta2")
     plt.ylim(-2, 0)
 
-    # Implement: Plot beta0 / beta2 (Intercept ratio)
+    # Plot beta0 / beta2 (Intercept ratio)
     plt.subplot(3, 3, 5)
+    intercept_ratios = np.array(beta0_list) / np.array(beta2_list)
+    plt.plot(shift_distances, intercept_ratios, marker='o', color='c')
     plt.title("Shift Distance vs Beta0 / Beta2 (Intercept Ratio)")
     plt.xlabel("Shift Distance")
     plt.ylabel("Beta0 / Beta2")
 
     # Plot logistic loss
     plt.subplot(3, 3, 6)
+    plt.plot(shift_distances, loss_list, marker='o', color='k')
     plt.title("Shift Distance vs Logistic Loss")
     plt.xlabel("Shift Distance")
     plt.ylabel("Logistic Loss")
 
-    # Implement: Plot margin width
+    #  Plot margin width
     plt.subplot(3, 3, 7)
+    plt.plot(shift_distances, margin_widths, marker='o', color='orange')
     plt.title("Shift Distance vs Margin Width")
     plt.xlabel("Shift Distance")
     plt.ylabel("Margin Width")
