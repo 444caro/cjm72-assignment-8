@@ -1,7 +1,7 @@
 # Assignment 8: Logistic Regression
 
 ---
-
+**Demo Video**: https://youtu.be/Tt7CFEYBgYE
 **Goals**:
 
 In this assignment, you'll explore the effect of shifting clusters in a dataset on the parameters of a logistic regression model. You will implement parts of the code to:
